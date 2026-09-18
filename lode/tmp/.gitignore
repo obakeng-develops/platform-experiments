@@ -1,0 +1,3 @@
+# Keep this directory while ignoring session material.
+*
+!.gitignore

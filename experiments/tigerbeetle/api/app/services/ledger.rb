@@ -20,7 +20,7 @@ module Ledger
   module_function
 
   def current
-    @current ||= PostgresLedger.new
+    @current ||= ENV.fetch("LEDGER_BACKEND", "postgres") == "tigerbeetle" ? TigerBeetleLedger.new : PostgresLedger.new
   end
 
   def reset!

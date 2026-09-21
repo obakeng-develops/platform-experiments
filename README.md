@@ -19,7 +19,7 @@ An experiment should include everything needed to reproduce its results. Secrets
 
 | Experiment | Status |
 | --- | --- |
-| [TigerBeetle](experiments/tigerbeetle/) | Planning |
+| [TigerBeetle](experiments/tigerbeetle/) | Measuring |
 | ClickHouse | Planned |
 | ClickStack | Planned |
 | Prefect | Planned |

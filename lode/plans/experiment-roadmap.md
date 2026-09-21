@@ -2,7 +2,7 @@
 
 The experiments are planned in this order:
 
-1. **TigerBeetle** - Planning
+1. **TigerBeetle** - Measuring
 2. **ClickHouse** - Planned
 3. **ClickStack** - Planned
 4. **Prefect** - Planned
@@ -10,6 +10,6 @@ The experiments are planned in this order:
 6. **Caddy** - Planned
 7. **Vector** - Planned
 
-TigerBeetle is the current focus. Its first implementation step is to define the deployment environment, workload and failure cases before adding infrastructure or load-generation code.
+TigerBeetle is the current focus. Its Rails API, two ledger implementations and Locust workload are ready. The next step is to run the benchmark matrix, retain raw results and document conclusions supported by those measurements.
 
 Related: [project summary](../summary.md), [experiment practices](../practices.md)

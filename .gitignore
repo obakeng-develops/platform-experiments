@@ -1,6 +1,13 @@
 .DS_Store
 .env
 *.log
+.bundle/
+__pycache__/
+experiments/tigerbeetle/api/config/master.key
+experiments/tigerbeetle/api/log/*
+experiments/tigerbeetle/api/storage/
+experiments/tigerbeetle/api/tmp/*
+experiments/tigerbeetle/tigerbeetle-data/
 
 lode/tmp/*
 !lode/tmp/.gitignore

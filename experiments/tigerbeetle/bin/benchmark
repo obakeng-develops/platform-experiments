@@ -1,0 +1,44 @@
+#!/bin/sh
+set -eu
+
+backend="${1:-}"
+if [ "$backend" != "postgres" ] && [ "$backend" != "tigerbeetle" ]; then
+  printf 'usage: %s postgres|tigerbeetle\n' "$0" >&2
+  exit 2
+fi
+
+cd "$(dirname "$0")/.."
+timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+name="${timestamp}-${backend}-u${USERS:-32}-b${BATCH_SIZE:-10}-utilities${UTILITY_COUNT:-1}"
+prefix="/results/$name"
+
+{
+  printf 'backend=%s\n' "$backend"
+  printf 'utility_count=%s\n' "${UTILITY_COUNT:-1}"
+  printf 'meter_count=%s\n' "${METER_COUNT:-1000}"
+  printf 'batch_size=%s\n' "${BATCH_SIZE:-10}"
+  printf 'users=%s\n' "${USERS:-32}"
+  printf 'spawn_rate=%s\n' "${SPAWN_RATE:-16}"
+  printf 'run_time=%s\n' "${RUN_TIME:-60s}"
+  date -u
+  uname -a
+  sw_vers
+  docker version --format 'docker_client={{.Client.Version}} docker_server={{.Server.Version}}'
+  docker compose version
+  docker stats --no-stream
+} > "results/${name}-environment.txt"
+
+docker compose --profile benchmark run --rm \
+  -e UTILITY_COUNT="${UTILITY_COUNT:-1}" \
+  -e METER_COUNT="${METER_COUNT:-1000}" \
+  -e BATCH_SIZE="${BATCH_SIZE:-10}" \
+  locust -f locustfile.py \
+  --host "http://api-${backend}:3000" \
+  --headless \
+  --users "${USERS:-32}" \
+  --spawn-rate "${SPAWN_RATE:-16}" \
+  --run-time "${RUN_TIME:-60s}" \
+  --csv "$prefix" \
+  --html "$prefix.html"
+
+docker stats --no-stream > "results/${name}-final-stats.txt"

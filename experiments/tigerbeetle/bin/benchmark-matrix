@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+cd "$(dirname "$0")/.."
+
+for backend in ${BACKENDS:-postgres tigerbeetle}; do
+  for utility_count in ${UTILITY_COUNTS:-1 10 1000}; do
+    for batch_size in ${BATCH_SIZES:-1 10 100 1000}; do
+      ./bin/reset
+      UTILITY_COUNT="$utility_count" BATCH_SIZE="$batch_size" ./bin/benchmark "$backend"
+    done
+  done
+done

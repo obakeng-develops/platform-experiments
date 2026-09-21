@@ -1,0 +1,101 @@
+name: tigerbeetle-experiment
+
+x-api: &api
+  build: ./api
+  security_opt:
+    - seccomp=unconfined
+  environment: &api-environment
+    RAILS_ENV: production
+    RAILS_LOG_TO_STDOUT: "1"
+    SECRET_KEY_BASE: local-experiment
+    RAILS_MAX_THREADS: "16"
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  tigerbeetle-format:
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.17.9
+    command: format --cluster=0 --replica=0 --replica-count=1 /data/0_0.tigerbeetle
+    security_opt:
+      - seccomp=unconfined
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+    volumes:
+      - tigerbeetle-data:/data
+    profiles: [setup]
+
+  tigerbeetle:
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.17.9
+    command: start --addresses=0.0.0.0:3000 --cache-grid=256MiB /data/0_0.tigerbeetle
+    security_opt:
+      - seccomp=unconfined
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+    ports:
+      - "3003:3000"
+    volumes:
+      - tigerbeetle-data:/data
+    networks:
+      default:
+        ipv4_address: 172.28.0.10
+
+  api-postgres:
+    <<: *api
+    environment:
+      <<: *api-environment
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/electricity_postgres
+      LEDGER_BACKEND: postgres
+    ports:
+      - "3001:3000"
+
+  api-tigerbeetle:
+    <<: *api
+    environment:
+      <<: *api-environment
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/electricity_tigerbeetle
+      LEDGER_BACKEND: tigerbeetle
+      TB_ADDRESS: 172.28.0.10:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      tigerbeetle:
+        condition: service_started
+    ports:
+      - "3002:3000"
+
+  locust:
+    image: locustio/locust:2.46.6
+    volumes:
+      - ./benchmark:/benchmark:ro
+      - ./results:/results
+    working_dir: /benchmark
+    profiles: [benchmark]
+
+volumes:
+  postgres-data:
+  tigerbeetle-data:
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24

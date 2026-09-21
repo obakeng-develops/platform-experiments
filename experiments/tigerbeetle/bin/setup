@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+cd "$(dirname "$0")/.."
+
+docker compose build
+docker compose up -d postgres
+docker compose run --rm api-postgres bin/rails db:prepare
+docker compose run --rm api-tigerbeetle bin/rails db:prepare
+docker compose --profile setup run --rm tigerbeetle-format
+docker compose up -d tigerbeetle api-postgres api-tigerbeetle

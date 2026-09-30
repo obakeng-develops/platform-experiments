@@ -1,6 +1,6 @@
 # TigerBeetle
 
-**Status:** Ready for measurement
+**Status:** A 72-run matrix is recorded. See the [final Locust matrix report](results/2026-09-30-final-matrix-report.md).
 
 This experiment asks one question: what happens when we model a high-contention financial workload as mutable relational state versus an append-only ledger?
 
@@ -165,10 +165,12 @@ This single-replica setup tests restart and retry behavior. It does not test Tig
 
 ## Recording Results
 
-No benchmark result has been recorded yet.
+The final matrix contains 3 runs for each backend, utility count and batch size. Its medians and limitations are in the [final Locust matrix report](results/2026-09-30-final-matrix-report.md). The [per-run dataset](results/2026-09-30-final-matrix-runs.csv) contains the Locust metrics used to calculate the medians.
 
-For each run, add the raw result files under `results/` when publishing them and summarize the host configuration, workload parameters and median measurements here.
+The first attempts were interrupted or affected by unrelated Docker workloads. Their timestamped output remains local and is excluded from the checked-in comparison. The final report identifies the 72 runs used here.
+
+Timestamped Locust output stays local. For a publishable run, retain a per-run dataset with the host configuration, workload parameters and summary measurements.
 
 ## Drawing Conclusions
 
-No conclusion has been drawn yet. The implementation and recorded measurements will determine whether the hypotheses hold on this environment.
+In the final matrix, TigerBeetle had higher median readings-per-second in all 12 tested cells. The result compares these end-to-end Rails API paths on one MacBook Pro. It does not isolate database-engine overhead or establish production capacity. PostgreSQL lock waits and post-run database size still need measurement.

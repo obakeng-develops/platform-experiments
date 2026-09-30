@@ -10,6 +10,6 @@ The experiments are planned in this order:
 6. **Caddy** - Planned
 7. **Vector** - Planned
 
-TigerBeetle is the current focus. Its Rails API, two ledger implementations and Locust workload are ready. The next step is to run the benchmark matrix, retain raw results and document conclusions supported by those measurements.
+TigerBeetle is the current focus. Its 72-run Locust matrix is complete, and the final report records the medians and limitations. TigerBeetle had higher median API reading throughput in all 12 tested configurations on the local host. PostgreSQL lock waits and database size remain follow-up measurements.
 
 Related: [project summary](../summary.md), [experiment practices](../practices.md)

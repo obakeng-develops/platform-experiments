@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+cd "$(dirname "$0")/.."
+
+docker compose down --volumes --remove-orphans
+docker compose --profile setup run --rm tigerbeetle-format
+docker compose up -d tigerbeetle
+docker compose build simulator

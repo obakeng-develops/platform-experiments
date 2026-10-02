@@ -1,0 +1,121 @@
+
+== grant ==
+
+  metric                        Lago                TigerBeetle         match
+  ---------------------------------------------------------------------------
+  balance (cents)               10000               10000               ok
+  balance (credits)             0.1e3               0.1e3               ok
+  available balance (cents)     10000               10000               ok
+
+  transactions
+    wt-1     inbound  granted       10000c  10000c left
+
+  ok   grant adds to balance once
+
+  ok   traceable grant tracks remaining
+
+== top_up pending then settled ==
+  before provider settlement:
+    Lago available:      0c
+    TigerBeetle pending: 5000c available
+
+  metric                        Lago                TigerBeetle         match
+  ---------------------------------------------------------------------------
+  balance (cents)               5000                5000                ok
+  balance (credits)             0.5e2               0.5e2               ok
+  available balance (cents)     5000                5000                ok
+
+  transactions
+    wt-1     inbound  purchased      5000c  n/a
+
+  ok   pending purchase creates no Lago balance
+
+  ok   pending TB credit counts toward available
+
+  ok   balance agrees after settlement
+
+  For real payment flows, create the posted TB credit only after provider settlement.
+
+== spend: usage accrual as pending debit, posted at invoice ==
+
+  metric                        Lago                TigerBeetle         match
+  ---------------------------------------------------------------------------
+  balance (cents)               7000                7000                ok
+  balance (credits)             0.7e2               0.7e2               ok
+  available balance (cents)     7000                7000                ok
+
+  transactions
+    wt-1     inbound  granted       10000c  7000c left
+    wt-2     outbound invoiced       3000c  n/a
+  consumptions
+    wt-1 -> wt-2  3000c
+
+  ok   balance after invoice
+
+  ok   7,000 cents remain in the granted lot
+
+  ok   one consumption row
+
+== void ==
+
+  metric                        Lago                TigerBeetle         match
+  ---------------------------------------------------------------------------
+  balance (cents)               10000               10000               ok
+  balance (credits)             0.1e3               0.1e3               ok
+  available balance (cents)     10000               10000               ok
+
+  transactions
+    wt-1     inbound  granted       10000c  10000c left
+
+  ok   Lago returns to the full balance
+
+  ok   the grant pool remains untouched
+
+  Both balances return to 100 credits. Lago clears derived ongoing usage;
+  TigerBeetle voids the pending debit. This is an analogy, not a claim that
+  Lago creates an equivalent voided wallet transaction for unbilled usage.
+
+== multi_lot: one spend from three inbound lots ==
+  Lago drew 2 consumption rows totalling 750c: wt-2=600c, wt-3=150c
+  TigerBeetle records ONE transfer. Lot provenance is not representable.
+
+  metric                        Lago                TigerBeetle         match
+  ---------------------------------------------------------------------------
+  balance (cents)               1050                1050                ok
+  balance (credits)             0.35e2              0.35e2              ok
+  available balance (cents)     1050                1050                ok
+
+  transactions
+    wt-1     inbound  purchased       300c  n/a
+    wt-2     inbound  granted         600c  0c left
+    wt-3     inbound  granted         900c  750c left
+    wt-4     outbound invoiced        750c  n/a
+  consumptions
+    wt-2 -> wt-4  600c
+    wt-3 -> wt-4  150c
+
+  ok   Lago preserves two drawable lots
+
+  ok   aggregate credits agree
+
+== threshold_refill: a wallet designed to go negative ==
+
+  metric                        Lago                TigerBeetle         match
+  ---------------------------------------------------------------------------
+  balance (cents)               1500                1500                ok
+  balance (credits)             0.15e2              0.15e2              ok
+  available balance (cents)     1500                1500                ok
+
+  transactions
+    wt-1     inbound  granted        1000c  n/a
+    wt-2     inbound  granted        3000c  n/a
+    wt-3     outbound invoiced       2500c  n/a
+
+  ok   ongoing allocation goes negative before invoice
+
+  ok   refill restores the balance
+
+  The ledger can represent negative availability without an explicit balance field.
+  Lago still owns the threshold rule that decides when and how much to refill.
+
+all checks passed

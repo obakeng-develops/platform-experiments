@@ -1,0 +1,53 @@
+name: lago-wallet-ledger
+
+services:
+  tigerbeetle-format:
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.17.9
+    command: format --cluster=0 --replica=0 --replica-count=1 /data/0_0.tigerbeetle
+    security_opt:
+      - seccomp=unconfined
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+    volumes:
+      - tigerbeetle-data:/data
+    profiles: [setup]
+
+  tigerbeetle:
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.17.9
+    command: start --addresses=0.0.0.0:3000 --cache-grid=256MiB /data/0_0.tigerbeetle
+    security_opt:
+      - seccomp=unconfined
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+    ports:
+      - "3003:3000"
+    volumes:
+      - tigerbeetle-data:/data
+    networks:
+      default:
+        ipv4_address: 172.28.0.10
+
+  simulator:
+    build: ./simulator
+    # io_uring, which the native client needs, is blocked by the default seccomp profile.
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      TB_ADDRESS: 172.28.0.10:3000
+    volumes:
+      - ./results:/results
+      - ./simulator:/simulator
+    working_dir: /simulator
+
+volumes:
+  tigerbeetle-data:
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24

@@ -10,11 +10,21 @@ class EnvironmentsController < ApplicationController
     end
 
     BibeManager.parent_deploy!(@environment, @service, version)
-    updated = @environment.bibes.includes(:bibes_services).flat_map do |bibe|
-      BibeManager.new(bibe).reconcile
+    outcomes = @environment.bibes.includes(:bibes_services).map do |bibe|
+      updated = BibeManager.new(bibe).reconcile
+      copy = bibe.bibes_services.find_by!(service: @service)
+
+      if copy.pinned?
+        "#{bibe.engineer} stayed at #{copy.version} (pinned)"
+      elsif updated.include?(@service.name)
+        "#{bibe.engineer} updated to #{copy.version}"
+      else
+        "#{bibe.engineer} was already at #{copy.version}"
+      end
     end
 
-    redirect_to root_path, notice: "#{@environment.name} now runs #{@service.name} #{version}. #{updated.size} BIBE service(s) synced."
+    outcome_summary = outcomes.any? ? outcomes.to_sentence : "No BIBEs follow this environment yet"
+    redirect_to root_path, notice: "#{@environment.name.capitalize} released #{@service.name} #{version}. #{outcome_summary}."
   rescue Kubernetes::Error => e
     redirect_to root_path, alert: "The parent version was saved, but a BIBE could not sync: #{e.message}"
   end

@@ -4,7 +4,7 @@
   <aside class="sidebar">
     <a class="wordmark" href="<%= root_path %>" aria-label="BIBEs home"><span class="wordmark-mark">b</span><span>bibes</span></a>
     <div class="sidebar-label">Workspace</div>
-    <a class="nav-item" href="<%= root_path %>"><span class="nav-icon" aria-hidden="true">▦</span>Environments</a>
+    <a class="nav-item" href="<%= root_path %>"><span class="nav-icon"><%= lucide_icon(:dashboard, size: 16) %></span>Environments</a>
     <div class="sidebar-bottom">
       <div class="cluster-card"><span class="cluster-dot dot-live"></span><div><strong><%= Kubernetes.current_context %></strong><small>Local Kubernetes</small></div></div>
       <div class="sidebar-footnote">A local BIBE experiment</div>
@@ -21,7 +21,7 @@
       <% if flash[:notice] %><div class="flash flash-notice" role="status"><span class="flash-check">✓</span><%= flash[:notice] %></div><% end %>
       <% if flash[:alert] %><div class="flash flash-alert" role="alert"><span>!</span><%= flash[:alert] %></div><% end %>
 
-      <div class="detail-back"><a href="<%= root_path %>">← All environments</a></div>
+      <div class="detail-back"><a href="<%= root_path %>"><%= lucide_icon(:arrow_left, size: 14) %> All environments</a></div>
       <section class="detail-heading">
         <div>
           <div class="eyebrow"><span class="eyebrow-line"></span>ISOLATED BACKEND ENVIRONMENT</div>
@@ -41,7 +41,7 @@
       </section>
 
       <section class="namespace-banner">
-        <div><span class="namespace-icon">⌘</span><div><span class="banner-label">KUBERNETES NAMESPACE</span><code><%= @bibe.namespace %></code></div></div>
+        <div><span class="namespace-icon"><%= lucide_icon(:boxes, size: 16) %></span><div><span class="banner-label">KUBERNETES NAMESPACE</span><code><%= @bibe.namespace %></code></div></div>
         <div class="namespace-health"><span class="cluster-dot <%= @cluster_ready ? 'dot-live' : 'dot-offline' %>"></span><%= @cluster_ready ? (@readiness.values.all? ? "All services ready" : "Waiting for pods") : "Cluster offline" %></div>
       </section>
 
@@ -61,7 +61,7 @@
           <% @services.each do |bibe_service| %>
             <% parent_version = @parent.version_of(bibe_service.service) %>
             <article class="service-detail-row">
-              <div class="service-detail-name"><span class="service-glyph service-glyph-large"><%= bibe_service.service.name.first.upcase %></span><div><strong><%= bibe_service.service.name %></strong><span><%= bibe_service.service.dependencies.any? ? "Calls #{bibe_service.service.dependencies.join(', ')}" : "No service calls" %></span></div></div>
+              <div class="service-detail-name"><span class="service-glyph service-glyph-large"><%= lucide_icon(bibe_service.service.kind == "store" ? :database : :boxes, size: 16) %></span><div><strong><%= bibe_service.service.name %></strong><span><%= bibe_service.service.dependencies.any? ? "Calls #{bibe_service.service.dependencies.join(', ')}" : "No service calls" %></span></div></div>
               <div class="detail-version"><span class="summary-label">RUNNING VERSION</span><code><%= bibe_service.version %></code><% if bibe_service.pinned? && parent_version != bibe_service.version %><small>Parent is on <%= parent_version %></small><% end %></div>
               <div class="detail-state"><span class="service-state <%= bibe_service.pinned? ? 'state-pinned' : 'state-sync' %>"><i></i><%= bibe_service.pinned? ? "Pinned" : "Following #{@parent.name}" %></span><small><%= !@cluster_ready ? "Cluster unavailable" : (@readiness[bibe_service.id] ? "Pod ready" : "Pod starting") %></small></div>
               <div class="service-deploy-control">
@@ -80,11 +80,11 @@
       </section>
 
       <section class="detail-callout">
-        <span class="callout-mark">↳</span>
+        <span class="callout-mark"><%= lucide_icon(:arrow_right, size: 16) %></span>
         <p><strong>Deploying pins one service.</strong> The other services keep following <%= @parent.name %>. Use “Follow parent” to unpin a service and bring it back in sync.</p>
       </section>
 
-      <footer class="page-footer"><span><a href="<%= root_path %>">← Back to all environments</a></span><span>Namespace isolation <b>·</b> Service-level deploys</span></footer>
+      <footer class="page-footer"><span><a href="<%= root_path %>"><%= lucide_icon(:arrow_left, size: 14) %> Back to all environments</a></span><span>Namespace isolation <b>·</b> Service-level deploys</span></footer>
     </div>
   </main>
 </div>

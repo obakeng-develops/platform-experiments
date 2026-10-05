@@ -72,7 +72,7 @@ kubectl get deployments,services -n bibe-bob-staging
 
 ## Design notes
 
-The UI uses Campsite's neutral scale and component patterns with the Nova shadcn style, a lime theme, Inter typography and Lucide icons. The inline Lucide and Feather icon notices are in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). It keeps the primary view focused on the BIBEs and makes pinned versus syncing services visible in each row.
+The UI uses Campsite's neutral scale and component patterns with the Nova shadcn style, a lime theme, Inter typography and Lucide icons. The inline Lucide and Feather icon notices are in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). The dashboard leads with the staging release scenario; each BIBE card highlights `posts` and keeps the other service rows behind a disclosure.
 
 Copy follows *On Writing Well*. Layout decisions use *Design Is Storytelling* and *Don't Make Me Think*. The first rendered screen gets a critique with the Interface-Craft design critique method.
 

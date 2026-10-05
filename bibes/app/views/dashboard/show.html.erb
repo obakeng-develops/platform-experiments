@@ -48,25 +48,15 @@
         </section>
       <% end %>
 
-      <section class="page-heading">
-        <div>
-          <div class="eyebrow"><span class="eyebrow-line"></span>THE BIBE SIMULATION</div>
-          <h1>Change staging.<br><span>See what updates.</span></h1>
-          <p class="page-description">Release one service and compare the BIBEs that follow staging with the ones pinned to their own version.</p>
-        </div>
-        <a href="#create-bibe" class="button <%= @bibes.any? ? 'button-secondary' : 'button-primary' %>"><%= lucide_icon(:plus, size: 16) %> Create a BIBE</a>
-      </section>
-
       <section class="scenario-card" aria-labelledby="scenario-title">
         <div class="scenario-copy">
-          <div class="eyebrow">START HERE</div>
-          <h2 id="scenario-title">Release one service</h2>
-          <p>Staging runs <code>posts</code> <strong><%= @demo_release.version %></strong>. Release a new version to see which BIBEs update.</p>
+          <div class="eyebrow">STAGING RELEASE</div>
+          <h1 id="scenario-title"><code>posts</code> <span><%= @demo_release.version %></span></h1>
           <%= form_with url: deploy_parent_service_path(@demo_environment, @demo_service), method: :post, class: "scenario-form" do |form| %>
-            <label class="field-label" for="scenario_version">New staging version</label>
+            <label class="field-label" for="scenario_version">New version</label>
             <div class="scenario-form-row">
               <%= form.text_field :version, id: "scenario_version", value: @demo_next_version, required: true, pattern: "[0-9]+\\.[0-9]+\\.[0-9]+(-[A-Za-z0-9.-]+)?", disabled: !@cluster_ready %>
-              <%= form.submit "Release to staging", class: "button button-primary", disabled: !@cluster_ready %>
+              <%= form.submit "Release", class: "button button-primary", disabled: !@cluster_ready %>
             </div>
           <% end %>
         </div>
@@ -91,10 +81,12 @@
 
       <div class="section-heading">
         <div>
-          <div class="eyebrow">THE RESULT</div>
           <h2>Your BIBEs</h2>
         </div>
-        <span class="section-count"><%= @bibes.size %> <%= "BIBE".pluralize(@bibes.size) %></span>
+        <div class="section-actions">
+          <span class="section-count"><%= @bibes.size %> <%= "BIBE".pluralize(@bibes.size) %></span>
+          <a href="#create-bibe" class="button button-secondary button-small"><%= lucide_icon(:plus, size: 14) %> Create BIBE</a>
+        </div>
       </div>
 
       <% if @bibes.empty? %>

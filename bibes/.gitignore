@@ -1,0 +1,11 @@
+/config/master.key
+/config/credentials/*.key
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/storage/*.sqlite3*
+/vendor/bundle
+/node_modules
+/public/assets
+/app/assets/builds

@@ -44,7 +44,7 @@ bin/rails server -p 3002
 
 Open <http://localhost:3002>.
 
-`bin/setup-local` uses the Docker driver and gives Minikube 4 CPUs and 6 GiB of memory. The app and verification script target the `minikube` kubectl context explicitly, even if another context is active. It creates Alice's and Bob's staging BIBEs and applies the initial demo state. Run `bin/demo` to restore that state after experimenting.
+`bin/setup-local` uses the Docker driver and gives Minikube 4 CPUs and 6 GiB of memory. The app and verification script target the `minikube` kubectl context explicitly, even if another context is active. It creates Alice's and Bob's staging BIBEs and applies the initial demo state. Run `bin/demo` to restore Alice and Bob's BIBEs after experimenting. It leaves any other BIBEs alone.
 
 ## Trying the deployment flow
 

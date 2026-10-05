@@ -155,18 +155,12 @@
   .eyebrow { display: flex; align-items: center; gap: .48rem; color: var(--gray-600); font-size: .62rem; font-weight: 750; letter-spacing: .13em; line-height: 1.3; }
   .eyebrow-line { width: 1.05rem; height: 2px; background: var(--color-lime-dark); }
   .page-wrap { width: min(100%, 79rem); margin: 0 auto; padding: 2.6rem clamp(1.2rem, 4vw, 3.3rem) 2rem; }
-  .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding-bottom: 2rem; }
-  .page-heading h1 { margin-top: .85rem; font-size: clamp(2.3rem, 4vw, 3.55rem); font-weight: 620; letter-spacing: -.072em; line-height: .99; }
-  .page-heading h1 span { color: var(--gray-600); }
-  .page-description { max-width: 35rem; margin-top: 1.1rem; color: var(--color-muted); font-size: .9rem; line-height: 1.65; }
-  .page-heading > .button { margin-bottom: .3rem; white-space: nowrap; }
-
+  .page-wrap:not(.detail-wrap) { padding-top: 1.55rem; }
   .scenario-card { display: grid; grid-template-columns: minmax(17rem, .9fr) minmax(21rem, 1.1fr); gap: 1.5rem; margin: .2rem 0 2.5rem; padding: 1.35rem; border: 1px solid var(--color-line); border-radius: var(--radius-lg); background: white; }
-  .scenario-copy h2 { margin-top: .35rem; font-size: 1.25rem; font-weight: 650; letter-spacing: -.04em; }
-  .scenario-copy > p { max-width: 29rem; margin-top: .45rem; color: var(--color-muted); font-size: .78rem; line-height: 1.55; }
-  .scenario-copy > p code { color: var(--color-ink); }
-  .scenario-copy > p strong { color: var(--color-ink); font-weight: 650; }
-  .scenario-form { max-width: 23rem; margin-top: .85rem; }
+  .scenario-copy h1 { margin-top: .35rem; font-size: 1.1rem; font-weight: 650; letter-spacing: -.035em; }
+  .scenario-copy h1 code { font-family: inherit; }
+  .scenario-copy h1 span { margin-left: .3rem; color: var(--color-muted); font-size: .85rem; font-weight: 500; }
+  .scenario-form { max-width: 23rem; margin-top: .65rem; }
   .scenario-form .field-label { display: block; margin: 0 0 .35rem; }
   .scenario-form-row { display: flex; gap: .5rem; }
   .scenario-form-row input[type="text"] { min-width: 0; height: 2.6rem; padding: 0 .7rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-sm); font-family: inherit; font-size: .78rem; }
@@ -185,6 +179,7 @@
   .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin: 0 0 1.1rem; }
   .section-heading h2 { margin-top: .3rem; font-size: 1.27rem; font-weight: 620; letter-spacing: -.04em; }
   .section-count { color: var(--color-subtle); font-size: .7rem; }
+  .section-actions { display: flex; align-items: center; gap: .75rem; }
   .bibe-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
   .bibe-card { min-width: 0; overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: white; box-shadow: var(--shadow-card); }
   .bibe-card-head { display: flex; align-items: center; gap: .7rem; padding: 1rem 1.05rem .8rem; }
@@ -349,9 +344,6 @@
     .cluster-card small { display: none; }
     .topbar { height: 3.2rem; padding: 0 1rem; }
     .page-wrap { padding: 1.65rem 1rem 1.5rem; }
-    .page-heading { align-items: flex-start; flex-direction: column; gap: 1.1rem; padding-bottom: 1.4rem; }
-    .page-heading h1 { font-size: clamp(2.25rem, 10vw, 3.2rem); }
-    .page-description { font-size: .82rem; }
     .scenario-card { grid-template-columns: 1fr; gap: .9rem; margin-bottom: 2rem; padding: 1rem; }
     .scenario-form { max-width: none; }
     .scenario-form-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
@@ -359,6 +351,8 @@
     .scenario-results { padding: .7rem; }
     .scenario-effect { font-size: .62rem; }
     .scenario-effect code { font-size: .61rem; }
+    .section-heading { align-items: center; }
+    .section-actions { gap: .5rem; }
     .bibe-grid, .parent-grid { grid-template-columns: 1fr; }
     .create-section { grid-template-columns: 1fr; gap: .8rem; margin-top: 2.4rem; padding: 1rem; }
     .create-copy { padding: .2rem; }

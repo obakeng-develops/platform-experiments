@@ -23,9 +23,9 @@ class EnvironmentsController < ApplicationController
       end
     end
 
-    outcome_summary = outcomes.any? ? outcomes.to_sentence : "No BIBEs follow this environment yet"
+    outcome_summary = outcomes.any? ? outcomes.to_sentence : "No ephemeral environments follow this parent yet"
     redirect_to root_path, notice: "#{@environment.name.capitalize} released #{@service.name} #{version}. #{outcome_summary}."
   rescue Kubernetes::Error => e
-    redirect_to root_path, alert: "The parent version was saved, but a BIBE could not sync: #{e.message}"
+    redirect_to root_path, alert: "The parent version was saved, but an environment could not sync: #{e.message}"
   end
 end

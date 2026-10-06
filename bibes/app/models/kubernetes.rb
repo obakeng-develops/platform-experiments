@@ -7,7 +7,6 @@ require "timeout"
 module Kubernetes
   class Error < StandardError; end
 
-  NAMESPACE_PREFIX = "bibe"
   CONTEXT = "minikube"
 
   module_function
@@ -118,7 +117,7 @@ module Kubernetes
     false
   end
 
-  # Port-forward a BIBE service so a browser can call it directly.
+  # Port-forward an environment service so a browser can call it directly.
   def port_forward(namespace, deployment, local_port)
     pid = spawn(
       "kubectl", "--context=#{CONTEXT}", "port-forward", "-n", namespace, "svc/#{deployment}",

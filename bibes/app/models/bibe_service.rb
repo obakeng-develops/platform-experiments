@@ -1,4 +1,4 @@
-# One service inside one BIBE. A pinned service stopped following its parent.
+# One service inside one ephemeral environment. Pinning stops it from following its parent.
 class BibeService < ApplicationRecord
   belongs_to :bibe
   belongs_to :service
@@ -12,7 +12,7 @@ class BibeService < ApplicationRecord
 
   scope :ordered, -> { includes(:service).sort_by { |bs| bs.service.name } }
 
-  # True when this BIBE's copy has fallen behind what the parent runs.
+  # True when this environment's copy has fallen behind its parent.
   def drifted?
     parent = Release.find_by(environment_id: parent_environment_id, service_id: service_id)
     parent.present? && parent.version != version

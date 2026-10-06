@@ -1,4 +1,4 @@
-// A BIBE workload pod. Every service in every environment runs this same binary,
+// An ephemeral environment workload pod. Every service runs this same binary,
 // with its role supplied by environment variables.
 package main
 
@@ -24,10 +24,10 @@ func identity() map[string]any {
 	return map[string]any{
 		"service":   env("SERVICE_NAME", "unknown"),
 		"version":   env("SERVICE_VERSION", "0.0.0"),
-		"namespace": env("BIBE_NAMESPACE", "default"),
-		"env":       env("BIBE_PARENT", "unknown"),
-		"bibe":      env("BIBE_NAME", ""),
-		"pinned":    os.Getenv("BIBE_PINNED") == "true",
+		"namespace":   env("EPHEMERAL_ENVIRONMENT_NAMESPACE", "default"),
+		"parent":      env("PARENT_ENVIRONMENT", "unknown"),
+		"environment": env("EPHEMERAL_ENVIRONMENT_NAME", ""),
+		"pinned":      os.Getenv("SERVICE_PINNED") == "true",
 		"pod":       env("HOSTNAME", "unknown"),
 	}
 }
@@ -60,7 +60,7 @@ func probe(name string) map[string]any {
 	if err := json.NewDecoder(resp.Body).Decode(&body); err == nil {
 		out["version"] = body["version"]
 		out["namespace"] = body["namespace"]
-		out["bibe"] = body["bibe"]
+		out["environment"] = body["environment"]
 	}
 	return out
 }
@@ -73,8 +73,8 @@ func main() {
 		json.NewEncoder(w).Encode(identity())
 	})
 
-	// /deps proves service discovery stays inside this BIBE. Every response in
-	// the tree should report this pod's own namespace.
+	// /deps proves service discovery stays inside this environment. Every response in
+// the tree should report this environment's own namespace.
 	mux.HandleFunc("/deps", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		results := []map[string]any{}

@@ -1,4 +1,4 @@
-# Reset Alice and Bob's BIBEs to a repeatable story: Alice owns a pinned build
+# Reset Alice and Bob's ephemeral environments to a repeatable story: Alice owns a pinned build
 # of posts, while Bob and staging follow the current parent version.
 PARENT_VERSIONS.each do |environment_name, versions|
   environment = Environment.find_by!(name: environment_name)
@@ -15,6 +15,11 @@ posts = Service.find_by!(name: "posts")
 { "alice" => "Alice", "bob" => "Bob" }.each do |name, engineer|
   bibe = Bibe.find_by(name: name)
   bibe ||= BibeManager.create(name: name, engineer: engineer, parent: staging.name)
+  target_namespace = "ephemeral-#{name}-#{staging.name}"
+  if bibe.namespace != target_namespace
+    Kubernetes.delete_namespace(bibe.namespace)
+    bibe.update!(namespace: target_namespace)
+  end
   BibeManager.new(bibe).provision
 end
 

@@ -1,10 +1,10 @@
-<% content_for :title, "BIBEs · Local environments" %>
+<% content_for :title, "Ephemeral environments · Local Minikube" %>
 
 <div class="app-shell">
   <aside class="sidebar">
-    <a class="wordmark" href="<%= root_path %>" aria-label="BIBEs home">
-      <span class="wordmark-mark">b</span>
-      <span>bibes</span>
+    <a class="wordmark" href="<%= root_path %>" aria-label="Ephemeral environments home">
+      <span class="wordmark-mark">e</span>
+      <span>ephemeral</span>
     </a>
 
     <div class="sidebar-label">Workspace</div>
@@ -21,7 +21,7 @@
           <small><%= @cluster_ready ? "Local Kubernetes" : "Start Minikube to continue" %></small>
         </div>
       </div>
-      <div class="sidebar-footnote">A local BIBE experiment</div>
+      <div class="sidebar-footnote">Local Minikube cluster</div>
     </div>
   </aside>
 
@@ -61,9 +61,9 @@
           <% end %>
         </div>
         <div class="scenario-results">
-          <div class="scenario-results-heading"><span>ON RELEASE</span><span><%= @demo_copies.size %> <%= "BIBE".pluralize(@demo_copies.size) %></span></div>
+          <div class="scenario-results-heading"><span>ON RELEASE</span><span><%= @demo_copies.size %> <%= "environment".pluralize(@demo_copies.size) %></span></div>
           <% if @demo_copies.empty? %>
-            <p class="scenario-empty">Create a staging BIBE to try this release.</p>
+            <p class="scenario-empty">Create a staging environment to try this release.</p>
           <% else %>
             <% @demo_copies.each do |bibe, copy| %>
               <div class="scenario-copy-row">
@@ -81,20 +81,20 @@
 
       <div class="section-heading">
         <div>
-          <h2>Your BIBEs</h2>
+          <h2>Your environments</h2>
         </div>
         <div class="section-actions">
-          <span class="section-count"><%= @bibes.size %> <%= "BIBE".pluralize(@bibes.size) %></span>
-          <a href="#create-bibe" class="button button-secondary button-small"><%= lucide_icon(:plus, size: 14) %> Create BIBE</a>
+          <span class="section-count"><%= @bibes.size %> <%= "environment".pluralize(@bibes.size) %></span>
+          <a href="#create-environment" class="button button-secondary button-small"><%= lucide_icon(:plus, size: 14) %> Create environment</a>
         </div>
       </div>
 
       <% if @bibes.empty? %>
         <section class="empty-state">
           <div class="empty-mark">b</div>
-          <h3>Start with your first BIBE</h3>
-          <p>Choose a parent environment. We'll create its services in a namespace of their own.</p>
-          <a href="#create-bibe" class="button button-primary">Create a BIBE <span>→</span></a>
+          <h3>Start with your first ephemeral environment</h3>
+          <p>Choose a parent. We'll create its services in a namespace of their own.</p>
+          <a href="#create-environment" class="button button-primary">Create environment <span>→</span></a>
         </section>
       <% else %>
         <div class="bibe-grid">
@@ -105,7 +105,7 @@
               <div class="bibe-card-head">
                 <div class="bibe-avatar"><%= bibe.engineer.first&.upcase || "?" %></div>
                 <div class="bibe-identity">
-                  <a class="bibe-name" href="<%= bibe_path(bibe) %>"><%= bibe.name %><span class="arrow"><%= lucide_icon(:arrow_up_right, size: 14) %></span></a>
+                  <a class="bibe-name" href="<%= ephemeral_environment_path(bibe) %>"><%= bibe.name %><span class="arrow"><%= lucide_icon(:arrow_up_right, size: 14) %></span></a>
                   <span class="bibe-owner"><%= bibe.engineer %> · from <%= bibe.environment %></span>
                 </div>
                 <span class="live-badge <%= @cluster_ready ? (bibe_ready ? 'badge-ready' : 'badge-starting') : 'badge-offline' %>"><i></i> <%= bibe_state %></span>
@@ -138,40 +138,40 @@
 
               <div class="bibe-card-foot">
                 <span><%= bibe.bibes_services.count %> services · <%= !@cluster_ready ? "cluster unavailable" : (bibe_ready ? "all pods ready" : "pods starting") %></span>
-                <a href="<%= bibe_path(bibe) %>" class="text-link">Manage BIBE <span><%= lucide_icon(:arrow_right, size: 14) %></span></a>
+                <a href="<%= ephemeral_environment_path(bibe) %>" class="text-link">Open environment <span><%= lucide_icon(:arrow_right, size: 14) %></span></a>
               </div>
             </article>
           <% end %>
         </div>
       <% end %>
 
-      <section class="create-section" id="create-bibe">
+      <section class="create-section" id="create-environment">
         <div class="create-copy">
           <div class="eyebrow">NEW ENVIRONMENT</div>
-          <h2>Make room to experiment.</h2>
-          <p>Pick a parent. Your services will be copied into a namespace only your BIBE uses.</p>
+          <h2>Create an ephemeral environment.</h2>
+          <p>Pick a parent. Your services will run in a namespace of their own.</p>
           <div class="create-note"><span><%= lucide_icon(:arrow_right, size: 14) %></span> Deploying a service later pins only that service.</div>
         </div>
-        <%= form_with scope: :bibe, url: bibes_path, class: "create-form" do |form| %>
+        <%= form_with scope: :bibe, url: ephemeral_environments_path, class: "create-form" do |form| %>
           <label class="field-label" for="bibe_engineer">Your name</label>
           <%= form.text_field :engineer, id: "bibe_engineer", placeholder: "e.g. Alice", required: true, autocomplete: "name" %>
-          <label class="field-label" for="bibe_name">BIBE name</label>
+          <label class="field-label" for="bibe_name">Environment name</label>
           <%= form.text_field :name, id: "bibe_name", placeholder: "e.g. alice-feature", required: true, pattern: "[A-Za-z0-9][A-Za-z0-9 -]*", title: "Letters, numbers, spaces and hyphens" %>
           <label class="field-label" for="bibe_environment">Start from</label>
           <%= form.select :environment, @environments.map { |environment| [environment.name.capitalize, environment.name] }, {}, id: "bibe_environment" %>
-          <button class="button button-primary button-full" type="submit" <%= "disabled" unless @cluster_ready %>>Create isolated environment <span>→</span></button>
-          <% unless @cluster_ready %><small class="form-help">Connect Minikube to create a BIBE.</small><% end %>
+          <button class="button button-primary button-full" type="submit" <%= "disabled" unless @cluster_ready %>>Create environment <span>→</span></button>
+          <% unless @cluster_ready %><small class="form-help">Connect Minikube to create an environment.</small><% end %>
         <% end %>
       </section>
 
       <section class="parents-section">
         <details class="parent-disclosure">
           <summary>Manage all parent releases <span><%= @environments.sum { |environment| environment.releases.size } %> services across <%= @environments.size %> environments</span></summary>
-          <p class="parents-intro">A parent release updates unpinned services in its BIBEs. Pinned services keep their current version.</p>
+          <p class="parents-intro">A parent release updates unpinned services in its ephemeral environments. Pinned services keep their current version.</p>
           <div class="parent-grid">
             <% @environments.each do |environment| %>
             <article class="parent-card">
-              <div class="parent-heading"><span class="parent-symbol"><%= environment.name == "prod" ? "P" : "S" %></span><div><h3><%= environment.name.capitalize %></h3><span><%= @bibes.count { |b| b.environment == environment.name } %> BIBEs from this parent</span></div><span class="parent-indicator"><i></i> PARENT</span></div>
+              <div class="parent-heading"><span class="parent-symbol"><%= environment.name == "prod" ? "P" : "S" %></span><div><h3><%= environment.name.capitalize %></h3><span><%= @bibes.count { |b| b.environment == environment.name } %> environments from this parent</span></div><span class="parent-indicator"><i></i> PARENT</span></div>
               <div class="parent-services">
                 <% environment.releases.includes(:service).sort_by { |release| release.service.name }.each do |release| %>
                   <div class="parent-service-row">
@@ -189,14 +189,14 @@
                   </div>
                 <% end %>
               </div>
-              <div class="parent-foot">New parent versions flow to every unpinned BIBE.</div>
+              <div class="parent-foot">New parent versions flow to every unpinned environment.</div>
             </article>
             <% end %>
           </div>
         </details>
       </section>
 
-      <footer class="page-footer"><span>Built to understand how isolated backends work.</span><span>Local only <b>·</b> Minikube <b>·</b> SQLite</span></footer>
+      <footer class="page-footer"><span>A local simulation of isolated backends.</span><span>Minikube <b>·</b> SQLite</span></footer>
     </div>
   </main>
 </div>

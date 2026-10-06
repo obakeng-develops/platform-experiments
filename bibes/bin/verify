@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Check that every service can reach its declared dependencies inside its own
-# namespace and that no response identifies another BIBE.
+# namespace and that no response identifies another ephemeral environment.
 
 require "open3"
 require "json"
@@ -28,7 +28,7 @@ bibes.each do |bibe|
     response = JSON.parse(output)
     dependencies = response.fetch("dependencies")
     foreign = dependencies.select do |dependency|
-      !dependency["reachable"] || dependency["namespace"] != bibe.namespace || dependency["bibe"] != bibe.name
+      !dependency["reachable"] || dependency["namespace"] != bibe.namespace || dependency["environment"] != bibe.name
     end
 
     marker = foreign.empty? ? "ok" : "LEAK OR UNREACHABLE"
@@ -44,7 +44,7 @@ end
 
 puts
 if failures.empty?
-  puts "PASS: #{bibes.size} BIBEs checked. All dependency calls stayed in their namespace."
+  puts "PASS: #{bibes.size} ephemeral environments checked. All dependency calls stayed in their namespace."
 else
   puts "FAIL:"
   failures.each { |failure| puts "  #{failure}" }

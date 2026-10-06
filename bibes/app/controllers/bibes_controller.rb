@@ -14,31 +14,31 @@ class BibesController < ApplicationController
     parent = params.require(:bibe).fetch(:environment)
 
     if name.blank? || engineer.blank? || !Environment.exists?(name: parent)
-      redirect_to root_path, alert: "Enter an engineer, a BIBE name and a parent environment."
+      redirect_to root_path, alert: "Enter an engineer, an environment name and a parent environment."
       return
     end
 
     bibe = BibeManager.create(name: name, engineer: engineer, parent: parent)
-    redirect_to bibe_path(bibe), notice: "#{bibe.name} was created. Its pods are starting."
+    redirect_to ephemeral_environment_path(bibe), notice: "#{bibe.name} was created. Its pods are starting."
   rescue ActiveRecord::RecordInvalid => e
     redirect_to root_path, alert: e.record.errors.full_messages.to_sentence
   rescue Kubernetes::Error => e
-    redirect_to root_path, alert: "Kubernetes could not create the BIBE: #{e.message}"
+    redirect_to root_path, alert: "Kubernetes could not create the environment: #{e.message}"
   end
 
   def destroy
     BibeManager.new(@bibe).destroy
     redirect_to root_path, notice: "#{@bibe.name} was removed."
   rescue Kubernetes::Error => e
-    redirect_to root_path, alert: "Kubernetes could not remove the BIBE: #{e.message}"
+    redirect_to root_path, alert: "Kubernetes could not remove the environment: #{e.message}"
   end
 
   def reconcile
     changed = BibeManager.new(@bibe).reconcile
     message = changed.any? ? "Updated #{changed.to_sentence}." : "All unpinned services are already in sync."
-    redirect_to bibe_path(@bibe), notice: message
+    redirect_to ephemeral_environment_path(@bibe), notice: message
   rescue Kubernetes::Error => e
-    redirect_to bibe_path(@bibe), alert: "Kubernetes could not reconcile this BIBE: #{e.message}"
+    redirect_to ephemeral_environment_path(@bibe), alert: "Kubernetes could not reconcile this environment: #{e.message}"
   end
 
   private

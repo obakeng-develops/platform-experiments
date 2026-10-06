@@ -1,10 +1,10 @@
-# Creates and reconciles BIBEs in the cluster.
+# Provisions and reconciles ephemeral environments in the cluster.
 #
-# The rule this implements: a BIBE copies its parent, and keeps following it
+# Each environment copies its parent, and keeps following it
 # service by service. Deploying your own build of a service pins that service.
 # Everything else keeps syncing.
 class BibeManager
-  IMAGE = "bibes-service:latest"
+  IMAGE = "ephemeral-service:0.2.0"
 
   attr_reader :bibe
 
@@ -12,14 +12,14 @@ class BibeManager
     @bibe = bibe
   end
 
-  # Create the namespace and one pod per service, each at the parent's version.
+  # Create an environment namespace and one pod per service, each at the parent's version.
   def self.create(name:, engineer:, parent:)
     raise Kubernetes::Error, "Minikube is unavailable. Start it with `minikube start`." unless Kubernetes.ready?
 
     parent_env = Environment.find_by!(name: parent)
-    namespace = "bibe-#{name}-#{parent}"
+    namespace = "ephemeral-#{name}-#{parent}"
     if Kubernetes.namespace_exists?(namespace)
-      raise Kubernetes::Error, "Namespace #{namespace} already exists. Inspect it before creating this BIBE."
+      raise Kubernetes::Error, "Namespace #{namespace} already exists. Inspect it before creating this environment."
     end
 
     bibe = nil
@@ -90,7 +90,7 @@ class BibeManager
   end
 
   # Bring every unpinned service up to the parent's version. Pinned services
-  # are left alone, which is what makes a BIBE safe to keep using.
+  # are left alone, which is what makes an environment safe to keep using.
   def reconcile
     parent = Environment.find_by!(name: bibe.environment)
     synced = []
@@ -127,10 +127,10 @@ class BibeManager
     {
       SERVICE_NAME: bibe_service.service.name,
       SERVICE_VERSION: bibe_service.version,
-      BIBE_NAME: bibe.name,
-      BIBE_NAMESPACE: bibe.namespace,
-      BIBE_PARENT: bibe.environment,
-      BIBE_PINNED: bibe_service.pinned.to_s
+      EPHEMERAL_ENVIRONMENT_NAME: bibe.name,
+      EPHEMERAL_ENVIRONMENT_NAMESPACE: bibe.namespace,
+      PARENT_ENVIRONMENT: bibe.environment,
+      SERVICE_PINNED: bibe_service.pinned.to_s
     }.merge(dependency_env(bibe_service.service))
   end
 

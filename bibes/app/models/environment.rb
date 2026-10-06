@@ -14,7 +14,7 @@ class Environment < ApplicationRecord
     releases.find_by(service_id: service.id)&.version
   end
 
-  # Fall back to a default so a BIBE can always be created, even if the parent
+  # Fall back to a default so an environment can be created, even if the parent
   # has not released a version for every service yet.
   def version_of!(service, default: "1.0.0")
     version_of(service) || default

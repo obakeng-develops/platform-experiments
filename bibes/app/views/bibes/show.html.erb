@@ -1,13 +1,13 @@
-<% content_for :title, "#{@bibe.name} · BIBEs" %>
+<% content_for :title, "#{@bibe.name} · Ephemeral environment" %>
 
 <div class="app-shell">
   <aside class="sidebar">
-    <a class="wordmark" href="<%= root_path %>" aria-label="BIBEs home"><span class="wordmark-mark">b</span><span>bibes</span></a>
+    <a class="wordmark" href="<%= root_path %>" aria-label="Ephemeral environments home"><span class="wordmark-mark">e</span><span>ephemeral</span></a>
     <div class="sidebar-label">Workspace</div>
     <a class="nav-item" href="<%= root_path %>"><span class="nav-icon"><%= lucide_icon(:dashboard, size: 16) %></span>Environments</a>
     <div class="sidebar-bottom">
       <div class="cluster-card"><span class="cluster-dot dot-live"></span><div><strong><%= Kubernetes.current_context %></strong><small>Local Kubernetes</small></div></div>
-      <div class="sidebar-footnote">A local BIBE experiment</div>
+      <div class="sidebar-footnote">Local Minikube cluster</div>
     </div>
   </aside>
 
@@ -28,13 +28,13 @@
           <div class="detail-title-row"><div class="detail-avatar"><%= @bibe.engineer.first&.upcase || "?" %></div><div><h1><%= @bibe.name %></h1><p><%= @bibe.engineer %>'s copy of <strong><%= @bibe.environment.capitalize %></strong></p></div></div>
         </div>
         <div class="detail-actions">
-          <%= button_to "Reconcile parent", reconcile_bibe_path(@bibe), class: "button button-secondary", disabled: !@cluster_ready %>
+          <%= button_to "Reconcile parent", reconcile_ephemeral_environment_path(@bibe), class: "button button-secondary", disabled: !@cluster_ready %>
           <details class="delete-details">
             <summary>Remove…</summary>
             <div class="delete-popover">
-              <strong>Delete this BIBE?</strong>
+              <strong>Delete this environment?</strong>
               <p>This removes the <code><%= @bibe.namespace %></code> namespace and its workloads.</p>
-              <%= button_to "Delete namespace", bibe_path(@bibe), method: :delete, class: "button button-small button-quiet", disabled: !@cluster_ready %>
+              <%= button_to "Delete environment", ephemeral_environment_path(@bibe), method: :delete, class: "button button-small button-quiet", disabled: !@cluster_ready %>
             </div>
           </details>
         </div>
@@ -54,7 +54,7 @@
 
       <section class="detail-services">
         <div class="section-heading">
-          <div><div class="eyebrow">THIS BIBE</div><h2>Services</h2></div>
+          <div><div class="eyebrow">THIS ENVIRONMENT</div><h2>Services</h2></div>
           <span class="section-count">One pod per service</span>
         </div>
         <div class="service-detail-list">
@@ -66,9 +66,9 @@
               <div class="detail-state"><span class="service-state <%= bibe_service.pinned? ? 'state-pinned' : 'state-sync' %>"><i></i><%= bibe_service.pinned? ? "Pinned" : "Following #{@parent.name}" %></span><small><%= !@cluster_ready ? "Cluster unavailable" : (@readiness[bibe_service.id] ? "Pod ready" : "Pod starting") %></small></div>
               <div class="service-deploy-control">
                 <% if bibe_service.pinned? %>
-                  <%= button_to "Follow parent", bibe_unpin_service_path(@bibe, bibe_service.service), class: "button button-small button-secondary", disabled: !@cluster_ready %>
+                  <%= button_to "Follow parent", ephemeral_environment_unpin_service_path(@bibe, bibe_service.service), class: "button button-small button-secondary", disabled: !@cluster_ready %>
                 <% else %>
-                  <%= form_with url: bibe_deploy_service_path(@bibe, bibe_service.service), method: :post, class: "pin-form" do |form| %>
+                  <%= form_with url: ephemeral_environment_deploy_service_path(@bibe, bibe_service.service), method: :post, class: "pin-form" do |form| %>
                     <%= form.text_field :version, placeholder: "e.g. 2.5.0", aria: { label: "Version to deploy for #{bibe_service.service.name}" }, required: true, pattern: "[0-9]+\\.[0-9]+\\.[0-9]+(-[A-Za-z0-9.-]+)?" %>
                     <%= form.submit "Deploy", class: "button button-small button-primary", disabled: !@cluster_ready %>
                   <% end %>

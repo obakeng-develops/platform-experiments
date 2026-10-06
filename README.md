@@ -21,7 +21,7 @@ An experiment should include everything needed to reproduce its results. Secrets
 | --- | --- |
 | [TigerBeetle](experiments/tigerbeetle/) | Measuring |
 | [Lago wallet ledger](experiments/lago-wallet-ledger/) | Exploring |
-| [Ephemeral environments](bibes/) | In progress |
+| [Ephemeral environments](experiments/ephemeral-environments/) | In progress |
 | ClickHouse | Planned |
 | ClickStack | Planned |
 | Prefect | Planned |

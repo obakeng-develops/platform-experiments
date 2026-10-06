@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
   root "dashboard#show"
 
-  resources :bibes, only: %i[create destroy show] do
+  resources :ephemeral_environments, path: "ephemeral-environments", controller: "bibes", only: %i[create destroy show] do
     post "services/:service_id/deploy", to: "bibe_services#deploy", as: :deploy_service
     post "services/:service_id/unpin", to: "bibe_services#unpin", as: :unpin_service
     post "reconcile", to: "bibes#reconcile", on: :member

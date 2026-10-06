@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+# Check that every service can reach its declared dependencies inside its own
+# namespace and that no response identifies another ephemeral environment.
+
+require "open3"
+require "json"
+require_relative "../config/environment"
+
+failures = []
+bibes = Bibe.ordered
+
+bibes.each do |bibe|
+  puts "== #{bibe.name} (#{bibe.namespace})"
+
+  bibe.bibes_services.ordered.each do |bibe_service|
+    name = bibe_service.service.name
+    output, error, status = Open3.capture3(
+      "kubectl", "--context=minikube", "--request-timeout=5s", "exec", "-n", bibe.namespace, "deploy/#{name}", "--",
+      "wget", "-qO-", "http://localhost:8080/deps"
+    )
+
+    unless status.success?
+      puts "  #{name.ljust(14)} unreachable: #{error.strip}"
+      failures << "#{bibe.name}/#{name}: could not query service"
+      next
+    end
+
+    response = JSON.parse(output)
+    dependencies = response.fetch("dependencies")
+    foreign = dependencies.select do |dependency|
+      !dependency["reachable"] || dependency["namespace"] != bibe.namespace || dependency["environment"] != bibe.name
+    end
+
+    marker = foreign.empty? ? "ok" : "LEAK OR UNREACHABLE"
+    puts "  #{name.ljust(14)} v#{response.dig('self', 'version').to_s.ljust(8)} " \
+         "#{dependencies.size} dependencies #{marker}"
+
+    failures << "#{bibe.name}/#{name}: #{foreign.inspect}" unless foreign.empty?
+  rescue JSON::ParserError => e
+    puts "  #{name.ljust(14)} invalid response: #{e.message}"
+    failures << "#{bibe.name}/#{name}: invalid response"
+  end
+end
+
+puts
+if failures.empty?
+  puts "PASS: #{bibes.size} ephemeral environments checked. All dependency calls stayed in their namespace."
+else
+  puts "FAIL:"
+  failures.each { |failure| puts "  #{failure}" }
+  exit 1
+end
